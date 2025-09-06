@@ -1,33 +1,33 @@
 name: Deploy Spring Boot to Elastic Beanstalk
 
-        on:
+on:
         push:
-        branches:
-        - main # Or your desired branch
+                branches:
+                        - main # Or your desired branch
 
-        jobs:
+jobs:
         build-and-deploy:
-        runs-on: ubuntu-latest
-        steps:
-        - name: Checkout code
-        uses: actions/checkout@v4
+                runs-on: ubuntu-latest
+                steps:
+                        - name: Checkout code
+                          uses: actions/checkout@v4
 
-        - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-        distribution: 'corretto' # Or your preferred Java distribution
-        java-version: '17' # Or your application's Java version
+                        - name: Set up Java
+                          uses: actions/setup-java@v4
+                          with:
+                                  distribution: 'corretto' # Or your preferred Java distribution
+                                  java-version: '17' # Or your application's Java version
 
-        - name: Build with Maven
-        run: mvn clean package -DskipTests
+                        - name: Build with Maven
+                          run: mvn clean package -DskipTests
 
-        - name: Deploy to Elastic Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v21
-        with:
-        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name: your-elastic-beanstalk-application-name
-        environment_name: your-elastic-beanstalk-environment-name
-        version_label: ${{ github.sha }}
-        region: your-aws-region # e.g., us-east-1
-        deployment_package: target/*.jar # Adjust if using Gradle or different build path
+                        - name: Deploy to Elastic Beanstalk
+                          uses: einaregilsson/beanstalk-deploy@v21
+                          with:
+                                  aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                                  aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                                  application_name: your-elastic-beanstalk-application-name
+                                  environment_name: your-elastic-beanstalk-environment-name
+                                  version_label: ${{ github.sha }}
+                                  region: us-east-1
+                                  deployment_package: target/*.jar # Adjust if using Gradle or different build path
