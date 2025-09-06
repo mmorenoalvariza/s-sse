@@ -42,7 +42,7 @@ jobs:
                                     SOLUTION_STACK=$(aws elasticbeanstalk list-available-solution-stacks --query 'SolutionStacks[?contains(@, `Corretto 17`) && contains(@, `64bit`)][0]' --output text)
                                     if [ -z "$SOLUTION_STACK" ]; then
                                       # Fallback to a common stack name
-                                      SOLUTION_STACK="64bit Amazon Linux 2 v3.6.0 running Corretto 17"
+                                      SOLUTION_STACK="64bit Amazon Linux 2023 v4.6.4 running Corretto 17"
                                     fi
                                     echo "Using solution stack: $SOLUTION_STACK"
                                     aws elasticbeanstalk create-environment \
