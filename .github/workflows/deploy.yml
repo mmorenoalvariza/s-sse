@@ -110,9 +110,20 @@ jobs:
                                         Namespace=aws:elasticbeanstalk:environment,OptionName=ServiceRole,Value=aws-elasticbeanstalk-service-role
                                     echo "Waiting for environment to be ready..."
                                     aws elasticbeanstalk wait environment-exists --environment-names sboot-demo-env-2
+                                    echo "Waiting for environment to finish updating..."
+                                    aws elasticbeanstalk wait environment-updated --environment-names sboot-demo-env-2
                                   else
                                     echo "Environment already exists"
                                   fi
+                          env:
+                                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                                  AWS_DEFAULT_REGION: us-east-1
+
+                        - name: Verify Environment Status
+                          run: |
+                                  echo "Checking environment status before deployment..."
+                                  aws elasticbeanstalk describe-environments --environment-names sboot-demo-env-2 --query 'Environments[0].[EnvironmentName,Status,Health]' --output table
                           env:
                                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
