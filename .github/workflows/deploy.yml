@@ -112,7 +112,9 @@ jobs:
                                         Namespace=aws:elb:listener:80,OptionName=InstancePort,Value=8080 \
                                         Namespace=aws:elb:listener:80,OptionName=InstanceProtocol,Value=HTTP \
                                         Namespace=aws:elasticbeanstalk:application:environment,OptionName=JVM_OPTIONS,Value="-Xmx400m -Xms128m -XX:+UseG1GC -XX:+UseStringDeduplication" \
-                                        Namespace=aws:autoscaling:launchconfiguration,OptionName=EC2KeyName,Value=spring-boot-key
+                                        Namespace=aws:autoscaling:launchconfiguration,OptionName=EC2KeyName,Value=spring-boot-key \
+                                        Namespace=aws:autoscaling:launchconfiguration,OptionName=SecurityGroups,Value=default \
+                                        Namespace=aws:elb:loadbalancer,OptionName=CrossZone,Value=true
                                     echo "Waiting for environment to be ready..."
                                     aws elasticbeanstalk wait environment-exists --environment-names sboot-demo-env-3
                                     echo "Waiting for environment to finish updating..."
