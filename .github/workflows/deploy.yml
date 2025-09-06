@@ -110,7 +110,8 @@ jobs:
                                         Namespace=aws:elasticbeanstalk:environment,OptionName=ServiceRole,Value=aws-elasticbeanstalk-service-role \
                                         Namespace=aws:elasticbeanstalk:application:environment,OptionName=SERVER_PORT,Value=5000 \
                                         Namespace=aws:elb:listener:80,OptionName=InstancePort,Value=5000 \
-                                        Namespace=aws:elb:listener:80,OptionName=InstanceProtocol,Value=HTTP
+                                        Namespace=aws:elb:listener:80,OptionName=InstanceProtocol,Value=HTTP \
+                                        Namespace=aws:elasticbeanstalk:application:environment,OptionName=JVM_OPTIONS,Value="-Xmx400m -Xms128m -XX:+UseG1GC -XX:+UseStringDeduplication"
                                     echo "Waiting for environment to be ready..."
                                     aws elasticbeanstalk wait environment-exists --environment-names sboot-demo-env-3
                                     echo "Waiting for environment to finish updating..."
