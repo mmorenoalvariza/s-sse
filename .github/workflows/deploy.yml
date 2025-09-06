@@ -108,8 +108,8 @@ jobs:
                                       --option-settings \
                                         Namespace=aws:autoscaling:launchconfiguration,OptionName=IamInstanceProfile,Value=aws-elasticbeanstalk-ec2-role \
                                         Namespace=aws:elasticbeanstalk:environment,OptionName=ServiceRole,Value=aws-elasticbeanstalk-service-role \
-                                        Namespace=aws:elasticbeanstalk:application:environment,OptionName=SERVER_PORT,Value=5000 \
-                                        Namespace=aws:elb:listener:80,OptionName=InstancePort,Value=5000 \
+                                        Namespace=aws:elasticbeanstalk:application:environment,OptionName=SERVER_PORT,Value=8080 \
+                                        Namespace=aws:elb:listener:80,OptionName=InstancePort,Value=8080 \
                                         Namespace=aws:elb:listener:80,OptionName=InstanceProtocol,Value=HTTP \
                                         Namespace=aws:elasticbeanstalk:application:environment,OptionName=JVM_OPTIONS,Value="-Xmx400m -Xms128m -XX:+UseG1GC -XX:+UseStringDeduplication"
                                     echo "Waiting for environment to be ready..."
