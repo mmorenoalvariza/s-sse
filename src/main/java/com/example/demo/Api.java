@@ -34,6 +34,11 @@ public class Api{
                         .build());
     }
 
+    @GetMapping(path = "/")
+    public String root() {
+        return "Spring Boot application is running! Try /products, /stream-flux, /stream-sse, or /stream-sse-mvc";
+    }
+
     @GetMapping(path = "/products")
     public List<String> products() {
         return Arrays.asList("Hi", "goodBye", "HOTSWAP_TEST","jjEY", "BAR");
