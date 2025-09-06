@@ -21,6 +21,15 @@ jobs:
                         - name: Build with Maven
                           run: mvn clean package -DskipTests
 
+                        - name: Create Elastic Beanstalk Application
+                          run: |
+                                  aws elasticbeanstalk describe-applications --application-names sboot-demo-app || \
+                                  aws elasticbeanstalk create-application --application-name sboot-demo-app --description "Spring Boot Demo Application"
+                          env:
+                                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                                  AWS_DEFAULT_REGION: us-east-1
+
                         - name: Deploy to Elastic Beanstalk
                           uses: einaregilsson/beanstalk-deploy@v21
                           with:
