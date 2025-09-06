@@ -34,22 +34,56 @@ jobs:
                                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                                   AWS_DEFAULT_REGION: us-east-1
 
+                        - name: Create IAM Role and Instance Profile
+                          run: |
+                                  # Create IAM role if it doesn't exist
+                                  if ! aws iam get-role --role-name aws-elasticbeanstalk-ec2-role 2>/dev/null; then
+                                    echo "Creating IAM role..."
+                                    aws iam create-role --role-name aws-elasticbeanstalk-ec2-role --assume-role-policy-document '{
+                                      "Version": "2012-10-17",
+                                      "Statement": [
+                                        {
+                                          "Effect": "Allow",
+                                          "Principal": {
+                                            "Service": "ec2.amazonaws.com"
+                                          },
+                                          "Action": "sts:AssumeRole"
+                                        }
+                                      ]
+                                    }'
+                                    
+                                    # Attach required policies
+                                    aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role --policy-arn arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
+                                    aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role --policy-arn arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier
+                                    aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role --policy-arn arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker
+                                    
+                                    # Create instance profile
+                                    aws iam create-instance-profile --instance-profile-name aws-elasticbeanstalk-ec2-role
+                                    aws iam add-role-to-instance-profile --instance-profile-name aws-elasticbeanstalk-ec2-role --role-name aws-elasticbeanstalk-ec2-role
+                                    
+                                    echo "Waiting for instance profile to propagate..."
+                                    sleep 10
+                                  else
+                                    echo "IAM role already exists"
+                                  fi
+                          env:
+                                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                                  AWS_DEFAULT_REGION: us-east-1
+
                         - name: Create Elastic Beanstalk Environment
                           run: |
                                   if ! aws elasticbeanstalk describe-environments --application-name sboot-demo-app --environment-names sboot-demo-env --query 'Environments[?EnvironmentName==`sboot-demo-env`]' --output text | grep -q sboot-demo-env; then
                                     echo "Environment does not exist, creating..."
-                                    # Get the latest Java Corretto solution stack
-                                    SOLUTION_STACK=$(aws elasticbeanstalk list-available-solution-stacks --query 'SolutionStacks[?contains(@, `Corretto 17`) && contains(@, `64bit`)][0]' --output text)
-                                    if [ -z "$SOLUTION_STACK" ]; then
-                                      # Fallback to a common stack name
-                                      SOLUTION_STACK="64bit Amazon Linux 2023 v4.6.4 running Corretto 17"
-                                    fi
+                                    SOLUTION_STACK="64bit Amazon Linux 2023 v4.6.4 running Corretto 17"
                                     echo "Using solution stack: $SOLUTION_STACK"
                                     aws elasticbeanstalk create-environment \
                                       --application-name sboot-demo-app \
                                       --environment-name sboot-demo-env \
                                       --solution-stack-name "$SOLUTION_STACK" \
-                                      --description "Spring Boot Demo Environment"
+                                      --description "Spring Boot Demo Environment" \
+                                      --option-settings \
+                                        Namespace=aws:autoscaling:launchconfiguration,OptionName=IamInstanceProfile,Value=aws-elasticbeanstalk-ec2-role
                                     echo "Waiting for environment to be ready..."
                                     aws elasticbeanstalk wait environment-exists --environment-names sboot-demo-env
                                   else
