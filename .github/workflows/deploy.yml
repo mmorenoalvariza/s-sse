@@ -96,13 +96,13 @@ jobs:
 
                         - name: Create Elastic Beanstalk Environment
                           run: |
-                                  if ! aws elasticbeanstalk describe-environments --application-name sboot-demo-app --environment-names sboot-demo-env-4 --query 'Environments[?EnvironmentName==`sboot-demo-env-4`]' --output text | grep -q sboot-demo-env-4; then
+                                  if ! aws elasticbeanstalk describe-environments --application-name sboot-demo-app --environment-names sboot-demo-env --query 'Environments[?EnvironmentName==`sboot-demo-env`]' --output text | grep -q sboot-demo-env; then
                                     echo "Environment does not exist, creating..."
                                     SOLUTION_STACK="64bit Amazon Linux 2023 v4.6.4 running Corretto 17"
                                     echo "Using solution stack: $SOLUTION_STACK"
                                     aws elasticbeanstalk create-environment \
                                       --application-name sboot-demo-app \
-                                      --environment-name sboot-demo-env-4 \
+                                      --environment-name sboot-demo-env \
                                       --solution-stack-name "$SOLUTION_STACK" \
                                       --description "Spring Boot Demo Environment" \
                                       --option-settings \
@@ -117,9 +117,9 @@ jobs:
                                         Namespace=aws:autoscaling:launchconfiguration,OptionName=SecurityGroups,Value=default \
                                         Namespace=aws:elb:loadbalancer,OptionName=CrossZone,Value=true
                                     echo "Waiting for environment to be ready..."
-                                    aws elasticbeanstalk wait environment-exists --environment-names sboot-demo-env-4
+                                    aws elasticbeanstalk wait environment-exists --environment-names sboot-demo-env
                                     echo "Waiting for environment to finish updating..."
-                                    aws elasticbeanstalk wait environment-updated --environment-names sboot-demo-env-4
+                                    aws elasticbeanstalk wait environment-updated --environment-names sboot-demo-env
                                   else
                                     echo "Environment already exists"
                                   fi
@@ -131,7 +131,7 @@ jobs:
                         - name: Verify Environment Status
                           run: |
                                   echo "Checking environment status before deployment..."
-                                  aws elasticbeanstalk describe-environments --environment-names sboot-demo-env-4 --query 'Environments[0].[EnvironmentName,Status,Health]' --output table
+                                  aws elasticbeanstalk describe-environments --environment-names sboot-demo-env --query 'Environments[0].[EnvironmentName,Status,Health]' --output table
                           env:
                                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -143,7 +143,7 @@ jobs:
                                   aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
                                   aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                                   application_name: sboot-demo-app
-                                  environment_name: sboot-demo-env-4
+                                  environment_name: sboot-demo-env
                                   version_label: ${{ github.sha }}
                                   region: us-east-1
                                   deployment_package: target/demo-0.0.1-SNAPSHOT.jar
