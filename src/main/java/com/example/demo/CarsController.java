@@ -15,9 +15,11 @@ import java.util.List;
 public class CarsController {
 
     private final List<Car> carList;
+    private final CarEventService carEventService;
 
-    public CarsController(List<Car> carList) {
+    public CarsController(List<Car> carList, CarEventService carEventService) {
         this.carList = new ArrayList<>(carList);
+        this.carEventService = carEventService;
     }
 
     @GetMapping
@@ -36,6 +38,7 @@ public class CarsController {
     @PostMapping
     public Car addCar(@RequestBody Car car) {
         carList.add(car);
+        carEventService.publishCarAddedEvent(car);
         return car;
     }
 }
