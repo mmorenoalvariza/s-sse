@@ -23,9 +23,9 @@ jobs:
 
                         - name: Create Elastic Beanstalk Application
                           run: |
-                                  if ! aws elasticbeanstalk describe-applications --application-names sboot-demo-app --query 'Applications[?ApplicationName==`sboot-demo-app`]' --output text | grep -q sboot-demo-app; then
+                                  if ! aws elasticbeanstalk describe-applications --application-names spring-web-demo --query 'Applications[?ApplicationName==`spring-web-demo`]' --output text | grep -q spring-web-demo; then
                                     echo "Application does not exist, creating..."
-                                    aws elasticbeanstalk create-application --application-name sboot-demo-app --description "Spring Boot Demo Application"
+                                    aws elasticbeanstalk create-application --application-name spring-web-demo --description "Spring Boot Demo Application"
                                   else
                                     echo "Application already exists"
                                   fi
@@ -96,13 +96,13 @@ jobs:
 
                         - name: Create Elastic Beanstalk Environment
                           run: |
-                                  if ! aws elasticbeanstalk describe-environments --application-name sboot-demo-app --environment-names sboot-demo-env --query 'Environments[?EnvironmentName==`sboot-demo-env`]' --output text | grep -q sboot-demo-env; then
+                                  if ! aws elasticbeanstalk describe-environments --application-name spring-web-demo --environment-names spring-web-demo --query 'Environments[?EnvironmentName==`spring-web-demo`]' --output text | grep -q spring-web-demo; then
                                     echo "Environment does not exist, creating..."
                                     SOLUTION_STACK="64bit Amazon Linux 2023 v4.6.4 running Corretto 17"
                                     echo "Using solution stack: $SOLUTION_STACK"
                                     aws elasticbeanstalk create-environment \
-                                      --application-name sboot-demo-app \
-                                      --environment-name sboot-demo-env \
+                                      --application-name spring-web-demo \
+                                      --environment-name spring-web-demo \
                                       --solution-stack-name "$SOLUTION_STACK" \
                                       --description "Spring Boot Demo Environment" \
                                       --option-settings \
@@ -117,9 +117,9 @@ jobs:
                                         Namespace=aws:autoscaling:launchconfiguration,OptionName=SecurityGroups,Value=default \
                                         Namespace=aws:elb:loadbalancer,OptionName=CrossZone,Value=true
                                     echo "Waiting for environment to be ready..."
-                                    aws elasticbeanstalk wait environment-exists --environment-names sboot-demo-env
+                                    aws elasticbeanstalk wait environment-exists --environment-names spring-web-demo
                                     echo "Waiting for environment to finish updating..."
-                                    aws elasticbeanstalk wait environment-updated --environment-names sboot-demo-env
+                                    aws elasticbeanstalk wait environment-updated --environment-names spring-web-demo
                                   else
                                     echo "Environment already exists"
                                   fi
@@ -131,7 +131,7 @@ jobs:
                         - name: Verify Environment Status
                           run: |
                                   echo "Checking environment status before deployment..."
-                                  aws elasticbeanstalk describe-environments --environment-names sboot-demo-env --query 'Environments[0].[EnvironmentName,Status,Health]' --output table
+                                  aws elasticbeanstalk describe-environments --environment-names spring-web-demo --query 'Environments[0].[EnvironmentName,Status,Health]' --output table
                           env:
                                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -142,8 +142,8 @@ jobs:
                           with:
                                   aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
                                   aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                                  application_name: sboot-demo-app
-                                  environment_name: sboot-demo-env
+                                  application_name: spring-web-demo
+                                  environment_name: spring-web-demo
                                   version_label: ${{ github.sha }}
                                   region: us-east-1
                                   deployment_package: target/demo-0.0.1-SNAPSHOT.jar
