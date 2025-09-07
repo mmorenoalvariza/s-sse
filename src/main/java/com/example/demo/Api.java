@@ -43,10 +43,6 @@ public class Api{
     public List<String> products() {
         return Arrays.asList("Hi", "goodBye", "HOTSWAP_TEST","jjEY", "BAR");
     }
-    @GetMapping(path = "/cars")
-    public List<String> cars() {
-        return Arrays.asList("BMW", "AUDI", "HOTSWAP_TEST","jjEY", "BAR");
-    }
 
     @GetMapping("/stream-sse-mvc")
     public SseEmitter streamSseMvc() {
